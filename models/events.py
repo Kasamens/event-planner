@@ -15,5 +15,5 @@ class EventUpdate(SQLModel):
     image: Optional[str]
     description: Optional[str]
     tags: Optional[List[str]]
-    locational: Optional[str]
+    location: Optional[str]
     
