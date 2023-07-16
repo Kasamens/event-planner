@@ -15,8 +15,8 @@ app.include_router(event_router, prefix="/event")
 
 @app.on_event("startup")
 def on_startup():
-    #conn()
-    pass
+    conn()
+
    
 
 if __name__ == "__main__":
