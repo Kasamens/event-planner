@@ -1,25 +1,37 @@
-from fastapi import APIRouter, HTTPException, status
-from models.mongo_users import User, UserSignIn
+from fastapi import APIRouter, HTTPException, status, Depends
+from models.users import User, UserSignIn
+from auth.hash_password import HashPassword
+from database.connection import get_session
+from sqlmodel import select
+import logging
 
-from database.mongo_connection import Database
+
 
 user_router = APIRouter(
     tags=["User"]
 )
 
-user_database = Database(User)
+hash_password = HashPassword
 
 # 
 
 @user_router.post("/signup")
-async def sign_user_up(user: User) -> dict:
-    user_exist = await User.find_one(User.email == user.email)
-    if user_exist:
+async def sign_user_up(user: User, session=Depends(get_session)) -> dict:
+    statement = select(User)
+    users = session.exec(statement)
+
+    if any(u.email == user.email for u in users):
             raise HTTPException(
                 status_code=status.HTTP_409_CONFLICT,
                 detail="User with email provided exists already."
+                
     )
-    await user_database.save(user)
+    hashed_password = hash_password.create_hash(self="",password=user.password)
+    user.password = hashed_password
+    #await user_database.save(user)
+    session.add(user)
+    session.commit()
+    session.refresh(user)
     return {
             "message": "User created successfully"
     }
