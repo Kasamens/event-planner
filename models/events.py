@@ -1,6 +1,7 @@
 from sqlmodel import SQLModel, JSON, Field, Column, Relationship
 from typing import List, Optional
 from models.users import User
+from sqlalchemy.ext.declarative import declarative_base
 
 
 class Event(SQLModel, table=True):
@@ -9,6 +10,7 @@ class Event(SQLModel, table=True):
     image: str
     description: str
     location: str
+    creator: Optional[str]
     tags: List[str] = Field(sa_column=Column(JSON))
     user: Optional[User] = Relationship(back_populates="events")
     user_id: Optional[int] = Field(default=None, foreign_key="user.id")

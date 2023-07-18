@@ -33,6 +33,7 @@ async def retrieve_event(id: int, session=Depends(get_session)) -> Event:
 @event_router.post("/new")
 async def create_event(new_event: Event, session=Depends(get_session), user: str =
 Depends(authenticate)) -> dict:
+    new_event.creator = user
     session.add(new_event)
     session.commit()
     session.refresh(new_event)
