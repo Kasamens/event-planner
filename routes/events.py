@@ -3,6 +3,7 @@ from models.events import Event, EventUpdate
 from typing import List
 from database.connection import get_session
 from sqlmodel import select
+from auth.authenticate import authenticate
 
 # from database.connection import Database
 
@@ -30,7 +31,8 @@ async def retrieve_event(id: int, session=Depends(get_session)) -> Event:
     )
 
 @event_router.post("/new")
-async def create_event(new_event: Event, session=Depends(get_session)) -> dict:
+async def create_event(new_event: Event, session=Depends(get_session), user: str =
+Depends(authenticate)) -> dict:
     session.add(new_event)
     session.commit()
     session.refresh(new_event)
@@ -39,7 +41,8 @@ async def create_event(new_event: Event, session=Depends(get_session)) -> dict:
     }
 
 @event_router.put("/{id}", response_model=Event)
-async def update_event(id: int, new_event: EventUpdate, session=Depends(get_session)) -> Event:
+async def update_event(id: int, new_event: EventUpdate, session=Depends(get_session), user: str =
+Depends(authenticate)) -> Event:
     event = session.get(Event,id)
     if event:
         event_data = new_event.dict(exclude_unset=True)
@@ -56,7 +59,8 @@ async def update_event(id: int, new_event: EventUpdate, session=Depends(get_sess
     )
 
 @event_router.delete("/{id}")
-async def delete_event(id: int, session=Depends(get_session)) -> dict:
+async def delete_event(id: int, session=Depends(get_session), user: str = 
+Depends(authenticate)) -> dict:
     event = session.get(Event,id)
     if event:
         session.delete(event)

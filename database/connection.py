@@ -1,5 +1,7 @@
 from sqlmodel import SQLModel, Session, create_engine
 from models.events import Event
+from pydantic import BaseSettings
+from typing import Optional
 
 database_file = "planner.db"
 database_connection_string = f"sqlite:///{database_file}"
@@ -14,3 +16,7 @@ def conn():
 def get_session():
     with Session(engine_url) as session:
         yield session
+
+
+class Settings(BaseSettings):
+    SECRET_KEY: Optional[str] = None

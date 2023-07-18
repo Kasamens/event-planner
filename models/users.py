@@ -1,7 +1,7 @@
 from typing import Optional, List
 from sqlmodel import SQLModel, Relationship, Field
 
-from pydantic import EmailStr
+from pydantic import EmailStr,BaseModel
 
 #from models.events import Event
 
@@ -12,6 +12,6 @@ class User(SQLModel, table=True):
     events: Optional[List["Event"]] = Relationship(back_populates="user")
 
 
-class UserSignIn(SQLModel):
-    email: EmailStr
-    password: str
+class TokenResponse(BaseModel):
+    access_token: str
+    token_type: str
